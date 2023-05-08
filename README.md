@@ -10,4 +10,5 @@ Python script that accesses aws s3, enters a bucket, takes all the names of the 
 
 
 
-![image](https://user-images.githubusercontent.com/116030785/236906701-a2794065-f5e7-4915-89c3-84da2aa81620.png)
+![Confidential](https://user-images.githubusercontent.com/116030785/236908193-c967edde-26e5-4c85-acbf-19b71706f2aa.png)
+
