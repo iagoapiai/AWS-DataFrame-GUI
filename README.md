@@ -1,6 +1,11 @@
 # StatusBolt
-Python script that accesses aws s3, enters a bucket, takes all the names of the files inside the bucket, assembles a list and displays it in a graphical interface!
+Python script that accesses aws s3!
 
+- Enters a bucket;
+- Takes all the names of the files inside the bucket;
+- Assembles a list and compares it with the current date;
+- If the current date is the same as the name of the file "horario" it shows online;
+- Shows the filtered list with online and offline asset management in a pysimplegui graphical interface.
 
 
 
