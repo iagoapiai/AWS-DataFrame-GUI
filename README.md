@@ -9,6 +9,6 @@ Python script that accesses aws s3, enters a bucket, takes all the names of the 
 
 
 
+![Design sem nome (1)](https://user-images.githubusercontent.com/116030785/236908537-0a3ecda3-971e-4aa9-a960-130aed676f97.png)
 
-![Design sem nome](https://user-images.githubusercontent.com/116030785/236908410-47c10744-ac4e-4b81-a806-4dab08f684a2.png)
 
