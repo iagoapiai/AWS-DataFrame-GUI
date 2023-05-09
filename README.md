@@ -8,7 +8,8 @@ Python script that accesses aws s3!
 - Shows the filtered list with online and offline asset management in a pysimplegui graphical interface;
 - Create an Excel file in the main folder.
 
-s
+OBS: This code will only work if you redo the modifications of the dataframe that is taken from the cloud. Don't forget to put your aws credentials
+
 
 
 
