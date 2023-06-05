@@ -105,8 +105,8 @@ for valor in range(len(df_f)):
 headers = {'Bolt': [], 'Data': [], 'Horário': [], 'Status': [], 'ID': [], 'Firm': [], 'Freq': []}
 headings = list(headers)
 
-tablee = df_f
-data = tablee.values.tolist()
+table = df_f
+data = table.values.tolist()
 
 sg.set_options(font=("Arial", 9))
 
