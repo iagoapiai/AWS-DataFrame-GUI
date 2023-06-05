@@ -14,7 +14,8 @@ Don't forget to put your aws credentials
 
 
 
-![Design sem nome (3)](https://user-images.githubusercontent.com/116030785/236908804-327a66de-6f67-4b57-8975-eee136c1021b.png)
+
+![Gui](https://github.com/iagoapiai/AWS-DataFrame-GUI/assets/116030785/b994d2d8-d818-4f90-8d72-9643fae47b28)
 
 
 
