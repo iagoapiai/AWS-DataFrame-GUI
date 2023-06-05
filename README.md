@@ -31,8 +31,11 @@ Python script that collects data from a bucket in aws and displays an interface 
 This code will only work if you redo the modifications of the dataframe that is taken from the cloud, it also needs to contain a folder called 'statusbolt' to save the excel file and an excel file inside that folder called 'idbolt' for it to replace the names with ids. 
 Don't forget to put your aws credentials!
 
-![Interface](https://github.com/iagoapiai/AWS-DataFrame-GUI/assets/116030785/989f8c58-240f-4b5e-a115-66b2e7138730)
+<p align="center">
+    <img src="https://github.com/iagoapiai/AWS-DataFrame-GUI/assets/116030785/989f8c58-240f-4b5e-a115-66b2e7138730">
+</p>
 
+Personal project, made to increase efficiency in my work! ❤️
 
 
 
