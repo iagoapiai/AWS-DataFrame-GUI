@@ -18,7 +18,7 @@ Python script that collects data from a bucket in aws and displays an interface 
 - [Pyperclip](https://pyperclip.readthedocs.io/en/latest/)
 
 ## WHAT THE SCRIPT DO:
-- 1° Enters a AWS bucket;
+- 1° Enters a AWS S3 bucket;
 - 2° Takes all the names of the files inside the bucket;
 - 3° Assembles a list and compares it with the current date;
 - 4° If the current date is the same as the name of the file "horario" it shows online;
