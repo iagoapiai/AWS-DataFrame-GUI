@@ -8,158 +8,156 @@ import pyperclip
 
 ctypes.windll.kernel32.FreeConsole()
 
-diretorio_final = os.getcwd() + '\\StatusBolt\\'
+caminho_diretorio = os.getcwd() + '\\StatusBolt\\'
 
-ACCESS_KEY = 'YOUR_ACCESS_KEY'
-SECRET_KEY = 'YOUR_SECRET_KEY'
-s3 = boto3.client('s3', aws_access_key_id=ACCESS_KEY, aws_secret_access_key=SECRET_KEY)
+CHAVE_ACESSO = 'YOUR_ACCESS_KEY'
+CHAVE_SECRETA = 'YOUR_SECRET_KEY'
+cliente_s3 = boto3.client('s3', aws_access_key_id=CHAVE_ACESSO, aws_secret_access_key=CHAVE_SECRETA)
 
-bucket_name = "validabolt"
+nome_bucket = "validabolt"
 
-paginator = s3.get_paginator('list_objects')
-page_iterator = paginator.paginate(Bucket=bucket_name)
-filtered_iterator = page_iterator.search("Contents")
+paginador = cliente_s3.get_paginator('list_objects')
+iterador_paginas = paginador.paginate(Bucket=nome_bucket)
+iterador_filtrado = iterador_paginas.search("Contents")
 
-lista = []
+lista_objetos = []
 
-for key_data in filtered_iterator:
-    lista.append(key_data)
+for dados_chave in iterador_filtrado:
+    lista_objetos.append(dados_chave)
 
-ls = pd.DataFrame(lista)
-ls.columns = ['id', 'data', '3', '4', '5', '6']
-ls1 = ls.drop('3', axis=1)
-ls2 = ls1.drop('4', axis=1)
-ls3 = ls2.drop('5', axis=1)
-ls4 = ls3.drop('6', axis=1)
-ls5 = ls4.drop('data', axis=1)
+frame_dados = pd.DataFrame(lista_objetos)
+frame_dados.columns = ['id', 'dados', '3', '4', '5', '6']
+frame_sem_3 = frame_dados.drop('3', axis=1)
+frame_sem_4 = frame_sem_3.drop('4', axis=1)
+frame_sem_5 = frame_sem_4.drop('5', axis=1)
+frame_sem_6 = frame_sem_5.drop('6', axis=1)
+frame_sem_dados = frame_sem_6.drop('dados', axis=1)
 
-i1 = ls5['id'].str.split('_', expand=True)
-i2 = i1.drop(1, axis=1)
-i3 = i2.drop(2, axis=1)
-i3.rename(columns={0: "Bolt"}, inplace=True)
+split_id = frame_sem_dados['id'].str.split('_', expand=True)
+frame_id_parcial = split_id.drop(1, axis=1)
+frame_id_final = frame_id_parcial.drop(2, axis=1)
+frame_id_final.rename(columns={0: "Parafuso"}, inplace=True)
 
-i4 = i2
-i5 = i4.drop(2, axis=1)
-i5.rename(columns={0: "ID"}, inplace=True)
+frame_id_completo = split_id
+frame_id_sem_2 = frame_id_completo.drop(2, axis=1)
+frame_id_sem_2.rename(columns={0: "ID"}, inplace=True)
 
-jac = i1
-jac.rename(columns={1: "firm"}, inplace=True)
-jac.rename(columns={2: "freq"}, inplace=True)
+frame_firmware = split_id
+frame_firmware.rename(columns={1: "firmware", 2: "frequencia"}, inplace=True)
 
-col_firmware = jac["firm"]
-col_frequency = jac["freq"]
+coluna_firmware = frame_firmware["firmware"]
+coluna_frequencia = frame_firmware["frequencia"]
 
-oi = ls4.astype(str)
-oi2 = oi['data'].str.split('+', expand=True)
-oi3 = oi2.drop(1, axis=1)
-oi1 = oi3[0].str.split(' ', expand=True)
+frame_str = frame_sem_5.astype(str)
+frame_split_dados = frame_str['dados'].str.split('+', expand=True)
+frame_split_dados = frame_split_dados.drop(1, axis=1)
+frame_data_hora = frame_split_dados[0].str.split(' ', expand=True)
 
-extracted_col2 = i3['Bolt']
-extracted_col3 = i5["ID"]
+col_parafuso = frame_id_final['Parafuso']
+col_id = frame_id_sem_2["ID"]
 
-vincula = pd.read_excel(diretorio_final + "IdBolt.xlsx")
-vincula1 = pd.DataFrame(vincula)
+vinculos = pd.read_excel(caminho_diretorio + "IdBolt.xlsx")
+frame_vinculos = pd.DataFrame(vinculos)
 
-oi3[0] = pd.to_datetime(oi3[0], format='%Y-%m-%d %H:%M:%S')
-oi3[0] = oi3[0] - timedelta(hours=3)
-oi3[0] = pd.to_datetime(oi3[0], format='%Y-%m-%d %H:%M:%S')
-oi3[0] = oi3[0].dt.strftime('%d-%m-%Y %H:%M:%S')
+frame_split_dados[0] = pd.to_datetime(frame_split_dados[0], format='%Y-%m-%d %H:%M:%S')
+frame_split_dados[0] = frame_split_dados[0] - timedelta(hours=3)
+frame_split_dados[0] = pd.to_datetime(frame_split_dados[0], format='%Y-%m-%d %H:%M:%S')
+frame_split_dados[0] = frame_split_dados[0].dt.strftime('%d-%m-%Y %H:%M:%S')
 
-pipo = oi3[0].str.split(':', expand=True)
-pipo1 = pipo.drop(1, axis=1)
-pipo2 = pipo1.drop(2, axis=1)
+frame_split_hora = frame_split_dados[0].str.split(':', expand=True)
+frame_hora_sem_1 = frame_split_hora.drop(1, axis=1)
+frame_hora_sem_2 = frame_hora_sem_1.drop(2, axis=1)
 
-oi4 = oi3[0].str.split(' ', expand=True)
-oi4.rename(columns = {0: "Data", 1: "Horário"}, inplace=True)
+frame_data_horario = frame_split_dados[0].str.split(' ', expand=True)
+frame_data_horario.rename(columns={0: "Data", 1: "Hora"}, inplace=True)
 
-hoje1 = datetime.today()
-hoje2 = hoje1.strftime('%d/%m/%Y')
-hoje3 = hoje2.replace("/", "-")
+hoje_formatado = datetime.today().strftime('%d/%m/%Y').replace("/", "-")
 
-def checar_data(Data):
-    if Data == hoje3:
-        return 'On'
+def verificar_status(data):
+    if data == hoje_formatado:
+        return 'Online'
     else:
         return 'Offline'
 
-oi4['Status'] = oi4['Data'].apply(checar_data)
+frame_data_horario['Status'] = frame_data_horario['Data'].apply(verificar_status)
 
-oi5 = oi4.join(extracted_col2)
-oi32 = oi5.join(extracted_col3)
-oi34 = oi32.join(col_firmware)
-oi35 = oi34.join(col_frequency)
-oi6 = oi35.sort_values('Status', ascending=False)
+frame_resultado = frame_data_horario.join(col_parafuso)
+frame_resultado = frame_resultado.join(col_id)
+frame_resultado = frame_resultado.join(coluna_firmware)
+frame_resultado = frame_resultado.join(coluna_frequencia)
+frame_resultado = frame_resultado.sort_values('Status', ascending=False)
 
-df_f = oi6[['Bolt', 'Data', 'Horário', 'Status', 'ID', 'firm', 'freq']]
+resultado_final = frame_resultado[['Parafuso', 'Data', 'Hora', 'Status', 'ID', 'firmware', 'frequencia']]
 
-df_f = df_f.loc[df_f['ID'] != 'LANG123456']
+resultado_final = resultado_final.loc[resultado_final['ID'] != 'LANG123456']
 
-for valor in range(len(df_f)):
-    item = df_f.iloc[valor, 0]
+for indice in range(len(resultado_final)):
+    parafuso = resultado_final.iloc[indice, 0]
 
-    for id_nome in vincula1.values:
-        if item == str(id_nome[0]):
+    for id_nome in frame_vinculos.values:
+        if parafuso == str(id_nome[0]):
+            resultado_final.iloc[indice, 0] = id_nome[1]
 
-            df_f.iloc[valor, 0] = id_nome[1]
+cabecalhos = {'Parafuso': [], 'Data': [], 'Hora': [], 'Status': [], 'ID': [], 'Firmware': [], 'Frequência': []}
+cabecalhos_lista = list(cabecalhos)
 
-headers = {'Bolt': [], 'Data': [], 'Horário': [], 'Status': [], 'ID': [], 'Firm': [], 'Freq': []}
-headings = list(headers)
-
-table = df_f
-data = table.values.tolist()
+tabela = resultado_final
+dados_tabela = tabela.values.tolist()
 
 sg.set_options(font=("Arial", 9))
 
-image_restart = diretorio_final + 'buscar.png'
+imagem_atualizar = caminho_diretorio + 'buscar.png'
 
-layout =[[sg.Text("Basta clicar nos elementos para copiar!", text_color='#FDFDFF', background_color='#434347', border_width=3)],
-        [sg.Table(data, headings=headings, auto_size_columns=True, enable_events=True, enable_click_events=True, justification='center', num_rows=13, key='-CONTACT_TABLE-', background_color='#ECF0F1', text_color='#17202A', row_height=45)],
-        [sg.Text("Nome da empresa: ", text_color='#17202A', background_color='#ECF0F1'),
-         sg.Input(size=(18, 1), background_color='#ECF0F1', key='-INPUT-'),
-         sg.ReadFormButton('.', image_filename=image_restart, button_color='#ECF0F1', image_size=(25, 25), image_subsample=2, border_width=0),
-         sg.Button('Vincular Nomes / ID', button_color='#12205F', border_width=0,), sg.Button('Planilha CSV', button_color='#12205F', border_width=0), sg.Button('Abrir Diretório', button_color='#12205F', border_width=0)]]
+layout = [
+    [sg.Text("Basta clicar nos elementos para copiar!", text_color='#FDFDFF', background_color='#434347', border_width=3)],
+    [sg.Table(dados_tabela, headings=cabecalhos_lista, auto_size_columns=True, enable_events=True, enable_click_events=True, justification='center', num_rows=13, key='-TABELA_CONTATOS-', background_color='#ECF0F1', text_color='#17202A', row_height=45)],
+    [sg.Text("Nome da empresa: ", text_color='#17202A', background_color='#ECF0F1'),
+     sg.Input(size=(18, 1), background_color='#ECF0F1', key='-ENTRADA-'),
+     sg.ReadFormButton('.', image_filename=imagem_atualizar, button_color='#ECF0F1', image_size=(25, 25), image_subsample=2, border_width=0),
+     sg.Button('Vincular Nomes / ID', button_color='#12205F', border_width=0), sg.Button('Planilha CSV', button_color='#12205F', border_width=0), sg.Button('Abrir Diretório', button_color='#12205F', border_width=0)]
+]
 
-df_f['ID'] = df_f['ID'].astype(float)
+resultado_final['ID'] = resultado_final['ID'].astype(float)
 
-icon = diretorio_final + 'ibbx.ico'
+icone = caminho_diretorio + 'ibbx.ico'
 
-window = sg.Window('Status Bolt', layout, auto_close=True, background_color='#ECF0F1', grab_anywhere=True, auto_close_duration=3540, finalize=True, icon=icon)
+janela = sg.Window('Status Parafuso', layout, auto_close=True, background_color='#ECF0F1', grab_anywhere=True, auto_close_duration=3540, finalize=True, icon=icone)
 
-table = window['-CONTACT_TABLE-']
-entry = window['-INPUT-']
-entry.bind('<Return>', 'RETURN-')
+tabela = janela['-TABELA_CONTATOS-']
+entrada = janela['-ENTRADA-']
+entrada.bind('<Return>', 'RETURN-')
 
-df_f.to_csv(diretorio_final + "StatusBolt.csv", sep=';', header=True, index=False, encoding='latin1')
+resultado_final.to_csv(caminho_diretorio + "StatusBolt.csv", sep=';', header=True, index=False, encoding='latin1')
 
 while True:
-    event, values = window.read()
-    if event == sg.WINDOW_CLOSED:
+    evento, valores = janela.read()
+    if evento == sg.WINDOW_CLOSED:
         break
 
-    elif isinstance(event, tuple) and event[:2] == ('-CONTACT_TABLE-', '+CLICKED+'):
-        row, col = position = event[2]
-        if None not in position and row >= 0:
-            text = data[row][col]
-            pyperclip.copy(text)
+    elif isinstance(evento, tuple) and evento[:2] == ('-TABELA_CONTATOS-', '+CLICKED+'):
+        linha, coluna = posicao = evento[2]
+        if None not in posicao and linha >= 0:
+            texto_copiado = dados_tabela[linha][coluna]
+            pyperclip.copy(texto_copiado)
 
-    if event in ('.', '-INPUT-RETURN-'):
-        text = values['-INPUT-'].lower()
-        if text == '':
+    if evento in ('.', '-ENTRADA-RETURN-'):
+        texto = valores['-ENTRADA-'].lower()
+        if texto == '':
             continue
-        row_colors = []
-        for row, row_data in enumerate(data):
-            if text in row_data[0].lower():
-                row_colors.append((row, '#99A3A4'))
+        cores_linhas = []
+        for linha, dados_linha in enumerate(dados_tabela):
+            if texto in dados_linha[0].lower():
+                cores_linhas.append((linha, '#99A3A4'))
             else:
-                row_colors.append((row, '#ECF0F1'))
-        table.update(row_colors=row_colors)
+                cores_linhas.append((linha, '#ECF0F1'))
+        tabela.update(row_colors=cores_linhas)
 
-    print(diretorio_final)
-    if event == 'Abir Diretório':
-        os.startfile(diretorio_final)
-    if event == 'Vincular Nomes / ID':
-        os.startfile(diretorio_final + 'IdBolt.xlsx')
-    if event == 'Planilha CSV':
-        os.startfile(diretorio_final + 'StatusBolt.csv')
+    print(caminho_diretorio)
+    if evento == 'Abrir Diretório':
+        os.startfile(caminho_diretorio)
+    if evento == 'Vincular Nomes / ID':
+        os.startfile(caminho_diretorio + 'IdBolt.xlsx')
+    if evento == 'Planilha CSV':
+        os.startfile(caminho_diretorio + 'StatusBolt.csv')
 
-window.close()
+janela.close()
